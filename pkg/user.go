@@ -1,9 +1,9 @@
 package franky
 
 type User struct {
-	id           string
-	email        string
-	password     string
-	apiKey       string
-	creationDate string
+	Id           string
+	Email        string
+	Password     string
+	ApiKey       string
+	CreationDate string
 }

@@ -1,11 +1,11 @@
 package franky
 
 type Record struct {
-	song     string
-	artist   string
-	album    string
-	playlist string
-	duration uint
-	time     uint
-	category string
+	Song     string
+	Artist   string
+	Album    string
+	Playlist string
+	Duration uint
+	Time     uint
+	Category string
 }

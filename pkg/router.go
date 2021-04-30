@@ -1,18 +1,37 @@
 package franky
 
 import (
-	"net/http"
-
 	"github.com/gorilla/mux"
 )
 
-func Router() *mux.Router {
-	router := mux.NewRouter()
-	router.HandleFunc("/", handler)
-
-	return router
+var queryParameters = []string{
+	"song", "{[\\w]+}",
+	"artist", "{[\\w]+}",
+	"album", "{[\\w]+}",
+	"playlist", "{[\\w]+}",
+	"category", "{[\\w]+}",
+	"range", "{[0-9]+-[0-9]+}",
 }
 
-func handler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("franky!\n"))
+func Router() *mux.Router {
+	router := mux.NewRouter()
+
+	router.HandleFunc("/", DefaultHandler)
+
+	router.HandleFunc("/users/{id:[0-9]+}", GetUser).
+		Methods("GET")
+	router.HandleFunc("/users/{id:[0-9]+}", DefaultHandler).
+		Methods("POST")
+	router.HandleFunc("/users/{id:[0-9]+}", DefaultHandler).
+		Methods("PUT")
+	router.HandleFunc("/users/{id:[0-9]+}", DefaultHandler).
+		Methods("DELETE")
+
+	router.HandleFunc("/users/{id:[0-9]+}/records", DefaultHandler).
+		Methods("GET").
+		Queries(queryParameters...)
+	router.HandleFunc("/users/{id:[0-9]+}/records", DefaultHandler).
+		Methods("POST")
+
+	return router
 }
