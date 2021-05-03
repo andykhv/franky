@@ -19,5 +19,5 @@ func (dao *testDAO) GetUser() *User {
 
 func (dao *testDAO) GetRecords() []Record {
 	record := Record{"song", "artist", "album", "playlist", 180, 1000, "rap"}
-	return []Record{record}
+	return []Record{record, record}
 }
