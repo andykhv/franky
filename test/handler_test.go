@@ -1,14 +1,13 @@
-package main
+package test
 
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	franky "github.com/andykhv/franky/pkg"
 )
-
-var userExpected = `{"Id":"id","Email":"email","Password":"password","ApiKey":"apiKey","CreationDate":"creationDate"}`
 
 func TestGetUserHandler(test *testing.T) {
 	request, err := http.NewRequest("GET", "/users/123", nil)
@@ -25,8 +24,10 @@ func TestGetUserHandler(test *testing.T) {
 		test.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
-	if responseRecoder.Body.String() != userExpected {
-		test.Errorf("handler returned unexpected body: got %v want %v",
-			responseRecoder.Body.String(), userExpected)
+	trimmedBody := strings.TrimSpace(responseRecoder.Body.String())
+
+	if trimmedBody != UserExpected {
+		test.Errorf("handler returned unexpected body: got %s want %s",
+			responseRecoder.Body.String(), UserExpected)
 	}
 }
