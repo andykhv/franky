@@ -15,37 +15,71 @@ func DefaultHandler(writer http.ResponseWriter, request *http.Request) {
 
 func GetUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	writeHeader(writer)
-	json.NewEncoder(writer).Encode(dao.GetUser(userId))
+	user, err := dao.GetUser(userId)
+
+	if err != nil {
+		writeErrorHeader(writer, err)
+	} else {
+		writeOkHeaderWithJson(writer)
+		json.NewEncoder(writer).Encode(user)
+	}
 }
 
 func PostUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	dao.AddUser(dao.GetUser(userId))
+	user, _ := dao.GetUser(userId)
+	err := dao.AddUser(user)
+
+	if err != nil {
+		writeErrorHeader(writer, err)
+	}
+
 	writer.WriteHeader(http.StatusOK)
 }
 
 func DeleteUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	dao.DeleteUser(userId)
-	writer.WriteHeader(http.StatusOK)
+	err := dao.DeleteUser(userId)
+
+	if err != nil {
+		writeErrorHeader(writer, err)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+	}
 }
 
 /*
 Optional Query Parameters: song, artist, album, playlist, category, range
 */
 func GetRecords(writer http.ResponseWriter, request *http.Request) {
-	writeHeader(writer)
-	json.NewEncoder(writer).Encode(dao.GetRecords())
+	records, err := dao.GetRecords()
+
+	if err != nil {
+		writeErrorHeader(writer, err)
+	} else {
+		writeOkHeaderWithJson(writer)
+		json.NewEncoder(writer).Encode(records)
+	}
 }
 
 func PostRecord(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	dao.AddRecord(userId, nil)
+	err := dao.AddRecord(userId, nil)
+
+	if err != nil {
+		writeErrorHeader(writer, err)
+	} else {
+		writer.WriteHeader(http.StatusOK)
+	}
+}
+
+func writeOkHeaderWithJson(writer http.ResponseWriter) {
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 }
 
-func writeHeader(writer http.ResponseWriter) {
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
+func writeErrorHeader(writer http.ResponseWriter, err *HttpError) {
+	writer.WriteHeader(err.StatusCode)
+	writer.Header().Set("Content-Type", "text/plain")
+	writer.Write([]byte(err.Err.Error()))
 }
