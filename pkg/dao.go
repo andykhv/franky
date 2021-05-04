@@ -1,7 +1,7 @@
 package franky
 
 type FrankyDAO interface {
-	GetUser() *User
+	GetUser(userId string) *User
 	AddUser(user *User)
 	DeleteUser(userId string)
 	GetRecords() []Record
@@ -15,7 +15,7 @@ func TestDAO() FrankyDAO {
 	return &testDAO{}
 }
 
-func (dao *testDAO) GetUser() *User {
+func (dao *testDAO) GetUser(userId string) *User {
 	user := User{"id", "email", "password", "apiKey", "creationDate"}
 	return &user
 }

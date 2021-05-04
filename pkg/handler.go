@@ -14,12 +14,14 @@ func DefaultHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func GetUser(writer http.ResponseWriter, request *http.Request) {
+	userId := mux.Vars(request)["id"]
 	writeHeader(writer)
-	json.NewEncoder(writer).Encode(dao.GetUser())
+	json.NewEncoder(writer).Encode(dao.GetUser(userId))
 }
 
 func PostUser(writer http.ResponseWriter, request *http.Request) {
-	dao.AddUser(dao.GetUser())
+	userId := mux.Vars(request)["id"]
+	dao.AddUser(dao.GetUser(userId))
 	writer.WriteHeader(http.StatusOK)
 }
 
