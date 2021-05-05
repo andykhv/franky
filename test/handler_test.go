@@ -7,68 +7,75 @@ import (
 	"testing"
 
 	franky "github.com/andykhv/franky/pkg"
+	"github.com/gorilla/mux"
 )
 
+var handler = franky.NewFrankyHandler()
+
+const usersRoute = "/users/{id:[0-9]+}"
+const recordsRoute = "/users/{id:[0-9]+}/records"
+
 func TestGetUserHandler(test *testing.T) {
-	request, err := http.NewRequest("GET", "/users/123", nil)
+	const path = "/users/123"
+
+	request, err := http.NewRequest("GET", path, nil)
 	if err != nil {
 		test.Fatal(err)
 	}
 
-	handler := http.HandlerFunc(franky.GetUser)
-
-	testHandler(request, handler, http.StatusOK, UserExpected, test)
+	testHandler(request, handler.GetUser, usersRoute, http.StatusOK, UserExpected, test)
 }
 
 func TestPostUserHandler(test *testing.T) {
-	request, err := http.NewRequest("POST", "/users/123", nil)
+	const path = "/users/123"
+
+	request, err := http.NewRequest("POST", path, nil)
 	if err != nil {
 		test.Fatal(err)
 	}
 
-	handler := http.HandlerFunc(franky.PostUser)
-
-	testHandler(request, handler, http.StatusOK, "", test)
+	testHandler(request, handler.PostUser, usersRoute, http.StatusOK, "", test)
 }
 
 func TestDeleteUserHandler(test *testing.T) {
-	request, err := http.NewRequest("DELETE", "/users/123", nil)
+	const path = "/users/123"
+
+	request, err := http.NewRequest("DELETE", path, nil)
 	if err != nil {
 		test.Fatal(err)
 	}
 
-	handler := http.HandlerFunc(franky.DeleteUser)
-
-	testHandler(request, handler, http.StatusOK, "", test)
+	testHandler(request, handler.DeleteUser, usersRoute, http.StatusOK, "", test)
 
 }
 
 func TestGetRecordsHandler(test *testing.T) {
-	request, err := http.NewRequest("GET", "/users/123/records", nil)
+	const path = "/users/123/records"
+
+	request, err := http.NewRequest("GET", path, nil)
 	if err != nil {
 		test.Fatal(err)
 	}
 
-	handler := http.HandlerFunc(franky.GetRecords)
-
-	testHandler(request, handler, http.StatusOK, RecordsExpected, test)
+	testHandler(request, handler.GetRecords, recordsRoute, http.StatusOK, RecordsExpected, test)
 }
 
 func TestPostRecordHandler(test *testing.T) {
-	request, err := http.NewRequest("POST", "/users/123/records", nil)
+	const path = "/users/123/records"
+
+	request, err := http.NewRequest("POST", path, nil)
 	if err != nil {
 		test.Fatal(err)
 	}
 
-	handler := http.HandlerFunc(franky.PostRecord)
-
-	testHandler(request, handler, http.StatusOK, "", test)
-
+	testHandler(request, handler.PostRecord, recordsRoute, http.StatusOK, "", test)
 }
 
-func testHandler(request *http.Request, handler http.HandlerFunc, expectedStatus int, expectedBody string, test *testing.T) {
+func testHandler(request *http.Request, handler http.HandlerFunc, path string, expectedStatus int, expectedBody string, test *testing.T) {
 	responseRecorder := httptest.NewRecorder()
-	handler.ServeHTTP(responseRecorder, request)
+	router := mux.NewRouter()
+	router.HandleFunc(path, handler)
+	router.ServeHTTP(responseRecorder, request)
 
 	if status := responseRecorder.Code; status != expectedStatus {
 		test.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)

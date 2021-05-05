@@ -7,15 +7,24 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var dao = TestDAO()
+type frankyHandler struct {
+	dao *FrankyDAO
+}
 
-func DefaultHandler(writer http.ResponseWriter, request *http.Request) {
+func NewFrankyHandler() *frankyHandler {
+	dao := TestDAO()
+	handler := frankyHandler{&dao}
+
+	return &handler
+}
+
+func (handler *frankyHandler) defaultHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte("Welcome To Franky!\n"))
 }
 
-func GetUser(writer http.ResponseWriter, request *http.Request) {
+func (handler *frankyHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	user, err := dao.GetUser(userId)
+	user, err := (*handler.dao).GetUser(userId)
 
 	if err != nil {
 		writeErrorHeader(writer, err)
@@ -25,10 +34,10 @@ func GetUser(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func PostUser(writer http.ResponseWriter, request *http.Request) {
+func (handler *frankyHandler) PostUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	user, _ := dao.GetUser(userId)
-	err := dao.AddUser(user)
+	user, _ := (*handler.dao).GetUser(userId)
+	err := (*handler.dao).AddUser(user)
 
 	if err != nil {
 		writeErrorHeader(writer, err)
@@ -37,9 +46,9 @@ func PostUser(writer http.ResponseWriter, request *http.Request) {
 	writer.WriteHeader(http.StatusOK)
 }
 
-func DeleteUser(writer http.ResponseWriter, request *http.Request) {
+func (handler *frankyHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	err := dao.DeleteUser(userId)
+	err := (*handler.dao).DeleteUser(userId)
 
 	if err != nil {
 		writeErrorHeader(writer, err)
@@ -51,8 +60,8 @@ func DeleteUser(writer http.ResponseWriter, request *http.Request) {
 /*
 Optional Query Parameters: song, artist, album, playlist, category, range
 */
-func GetRecords(writer http.ResponseWriter, request *http.Request) {
-	records, err := dao.GetRecords()
+func (handler *frankyHandler) GetRecords(writer http.ResponseWriter, request *http.Request) {
+	records, err := (*handler.dao).GetRecords()
 
 	if err != nil {
 		writeErrorHeader(writer, err)
@@ -62,9 +71,9 @@ func GetRecords(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func PostRecord(writer http.ResponseWriter, request *http.Request) {
+func (handler *frankyHandler) PostRecord(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	err := dao.AddRecord(userId, nil)
+	err := (*handler.dao).AddRecord(userId, nil)
 
 	if err != nil {
 		writeErrorHeader(writer, err)

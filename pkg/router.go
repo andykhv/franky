@@ -8,21 +8,22 @@ import (
 
 func Router() *mux.Router {
 	router := mux.NewRouter()
+	handler := NewFrankyHandler()
 
-	router.HandleFunc("/", DefaultHandler)
+	router.HandleFunc("/", handler.defaultHandler)
 
-	router.HandleFunc("/users/{id:[0-9]+}", GetUser).
+	router.HandleFunc("/users/{id:[0-9]+}", handler.GetUser).
 		Methods(http.MethodGet)
-	router.HandleFunc("/users/{id:[0-9]+}", PostUser).
+	router.HandleFunc("/users/{id:[0-9]+}", handler.PostUser).
 		Methods(http.MethodPost)
-	router.HandleFunc("/users/{id:[0-9]+}", PostUser).
+	router.HandleFunc("/users/{id:[0-9]+}", handler.PostUser).
 		Methods(http.MethodPut)
-	router.HandleFunc("/users/{id:[0-9]+}", DeleteUser).
+	router.HandleFunc("/users/{id:[0-9]+}", handler.DeleteUser).
 		Methods(http.MethodDelete)
 
-	router.HandleFunc("/users/{id:[0-9]+}/records", GetRecords).
+	router.HandleFunc("/users/{id:[0-9]+}/records", handler.GetRecords).
 		Methods(http.MethodGet)
-	router.HandleFunc("/users/{id:[0-9]+}/records", PostRecord).
+	router.HandleFunc("/users/{id:[0-9]+}/records", handler.PostRecord).
 		Methods(http.MethodPost)
 
 	return router

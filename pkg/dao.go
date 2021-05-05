@@ -16,7 +16,7 @@ func TestDAO() FrankyDAO {
 }
 
 func (dao *testDAO) GetUser(userId string) (*User, *HttpError) {
-	user := User{"id", "email", "password", "apiKey", "creationDate"}
+	user := User{userId, "email", "password", "apiKey", "creationDate"}
 	return &user, nil
 }
 
