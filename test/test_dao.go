@@ -1,6 +1,11 @@
 package test
 
-import franky "github.com/andykhv/franky/pkg"
+import (
+	"fmt"
+	"net/http"
+
+	franky "github.com/andykhv/franky/pkg"
+)
 
 type testDAO struct {
 }
@@ -10,20 +15,39 @@ func NewTestDAO() franky.FrankyDAO {
 }
 
 func (dao *testDAO) GetUser(userId string) (*franky.User, *franky.HttpError) {
-	user := franky.User{userId, "email", "password", "apiKey", "creationDate"}
-	return &user, nil
+	if userId == "123" {
+		user := franky.User{Id: userId, Email: "email", Password: "password", ApiKey: "apiKey", CreationDate: "creationDate"}
+		return &user, nil
+	}
+
+	err := fmt.Errorf("userId %s not found", userId)
+	httpError := franky.HttpError{StatusCode: http.StatusNotFound, Err: err}
+
+	return nil, &httpError
 }
 
 func (dao *testDAO) AddUser(user *franky.User) *franky.HttpError {
+	if user.Email == "email" {
+		err := fmt.Errorf("email already exists")
+		httpError := franky.HttpError{StatusCode: http.StatusNotFound, Err: err}
+		return &httpError
+	}
+
 	return nil
 }
 
 func (dao *testDAO) DeleteUser(userId string) *franky.HttpError {
-	return nil
+	if userId == "123" {
+		return nil
+	}
+
+	err := fmt.Errorf("userId %s not found", userId)
+	httpError := franky.HttpError{StatusCode: http.StatusNotFound, Err: err}
+	return &httpError
 }
 
 func (dao *testDAO) GetRecords() ([]franky.Record, *franky.HttpError) {
-	record := franky.Record{"song", "artist", "album", "playlist", 180, 1000, "rap"}
+	record := franky.Record{Song: "song", Artist: "artist", Album: "album", Playlist: "playlist", Duration: 180, Time: 1000, Category: "rap"}
 	return []franky.Record{record, record}, nil
 }
 

@@ -53,7 +53,7 @@ func (handler *FrankyHandler) PostUser(writer http.ResponseWriter, request *http
 	}
 
 	httpError := (*handler.dao).AddUser(&user)
-	if err != nil {
+	if httpError != nil {
 		writeErrorHeader(writer, httpError)
 		return
 	}
