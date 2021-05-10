@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -29,7 +30,7 @@ func TestGetUserHandler(test *testing.T) {
 func TestPostUserHandler(test *testing.T) {
 	const path = "/users/123"
 
-	request, err := http.NewRequest("POST", path, nil)
+	request, err := http.NewRequest("POST", path, bytes.NewBufferString(UserExpected))
 	if err != nil {
 		test.Fatal(err)
 	}
@@ -63,7 +64,7 @@ func TestGetRecordsHandler(test *testing.T) {
 func TestPostRecordHandler(test *testing.T) {
 	const path = "/users/123/records"
 
-	request, err := http.NewRequest("POST", path, nil)
+	request, err := http.NewRequest("POST", path, bytes.NewBufferString(RecordsExpected))
 	if err != nil {
 		test.Fatal(err)
 	}

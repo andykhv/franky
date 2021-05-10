@@ -14,10 +14,8 @@ func Router() *mux.Router {
 
 	router.HandleFunc("/users/{id:[0-9]+}", handler.GetUser).
 		Methods(http.MethodGet)
-	router.HandleFunc("/users/{id:[0-9]+}", handler.PostUser).
-		Methods(http.MethodPost)
-	router.HandleFunc("/users/{id:[0-9]+}", handler.PostUser).
-		Methods(http.MethodPut)
+	router.HandleFunc("/users", handler.PostUser).
+		Methods(http.MethodPost, http.MethodPut)
 	router.HandleFunc("/users/{id:[0-9]+}", handler.DeleteUser).
 		Methods(http.MethodDelete)
 

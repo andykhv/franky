@@ -2,6 +2,7 @@ package franky
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -35,12 +36,33 @@ func (handler *frankyHandler) GetUser(writer http.ResponseWriter, request *http.
 }
 
 func (handler *frankyHandler) PostUser(writer http.ResponseWriter, request *http.Request) {
-	userId := mux.Vars(request)["id"]
-	user, _ := (*handler.dao).GetUser(userId)
-	err := (*handler.dao).AddUser(user)
+	bodyReadable, err := request.GetBody()
 
 	if err != nil {
-		writeErrorHeader(writer, err)
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	body, err := ioutil.ReadAll(bodyReadable)
+	if err != nil {
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	var user User
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	httpError := (*handler.dao).AddUser(&user)
+	if err != nil {
+		writeErrorHeader(writer, httpError)
+		return
 	}
 
 	writer.WriteHeader(http.StatusOK)
@@ -73,13 +95,37 @@ func (handler *frankyHandler) GetRecords(writer http.ResponseWriter, request *ht
 
 func (handler *frankyHandler) PostRecord(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
-	err := (*handler.dao).AddRecord(userId, nil)
+
+	bodyReader, err := request.GetBody()
 
 	if err != nil {
-		writeErrorHeader(writer, err)
-	} else {
-		writer.WriteHeader(http.StatusOK)
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
 	}
+
+	body, err := ioutil.ReadAll(bodyReader)
+	if err != nil {
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	var records []Record
+	err = json.Unmarshal(body, &records)
+	if err != nil {
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	httpError := (*handler.dao).AddRecord(userId, &records[0])
+	if httpError != nil {
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	writer.WriteHeader(http.StatusOK)
 }
 
 func writeOkHeaderWithJson(writer http.ResponseWriter) {
