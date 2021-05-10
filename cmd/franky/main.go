@@ -6,10 +6,13 @@ import (
 	"net/http"
 
 	franky "github.com/andykhv/franky/pkg"
+	"github.com/andykhv/franky/test"
 )
 
 func main() {
-	router := franky.Router()
+	dao := test.NewTestDAO()
+	handler := franky.NewFrankyHandler(&dao)
+	router := franky.Router(handler)
 
 	fmt.Println("starting...")
 	log.Fatal(http.ListenAndServe(":8000", router))

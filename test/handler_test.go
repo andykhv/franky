@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	dao     = franky.NewTestDAO()
+	dao     = NewTestDAO()
 	handler = franky.NewFrankyHandler(&dao)
 )
 

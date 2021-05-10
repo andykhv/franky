@@ -6,13 +6,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Router() *mux.Router {
+func Router(handler *FrankyHandler) *mux.Router {
 	router := mux.NewRouter()
-	dao := NewTestDAO()
-	handler := NewFrankyHandler(&dao)
 
 	router.HandleFunc("/", handler.defaultHandler)
-
 	router.HandleFunc("/users/{id:[0-9]+}", handler.GetUser).
 		Methods(http.MethodGet)
 	router.HandleFunc("/users", handler.PostUser).

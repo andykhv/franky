@@ -8,21 +8,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type frankyHandler struct {
+type FrankyHandler struct {
 	dao *FrankyDAO
 }
 
-func NewFrankyHandler(dao *FrankyDAO) *frankyHandler {
-	handler := frankyHandler{dao}
+func NewFrankyHandler(dao *FrankyDAO) *FrankyHandler {
+	handler := FrankyHandler{dao}
 
 	return &handler
 }
 
-func (handler *frankyHandler) defaultHandler(writer http.ResponseWriter, request *http.Request) {
+func (handler *FrankyHandler) defaultHandler(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte("Welcome To Franky!\n"))
 }
 
-func (handler *frankyHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
+func (handler *FrankyHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
 	user, err := (*handler.dao).GetUser(userId)
 
@@ -34,7 +34,7 @@ func (handler *frankyHandler) GetUser(writer http.ResponseWriter, request *http.
 	}
 }
 
-func (handler *frankyHandler) PostUser(writer http.ResponseWriter, request *http.Request) {
+func (handler *FrankyHandler) PostUser(writer http.ResponseWriter, request *http.Request) {
 	bodyReadable := request.Body
 
 	body, err := ioutil.ReadAll(bodyReadable)
@@ -61,7 +61,7 @@ func (handler *frankyHandler) PostUser(writer http.ResponseWriter, request *http
 	writer.WriteHeader(http.StatusOK)
 }
 
-func (handler *frankyHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
+func (handler *FrankyHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
 	err := (*handler.dao).DeleteUser(userId)
 
@@ -75,7 +75,7 @@ func (handler *frankyHandler) DeleteUser(writer http.ResponseWriter, request *ht
 /*
 Optional Query Parameters: song, artist, album, playlist, category, range
 */
-func (handler *frankyHandler) GetRecords(writer http.ResponseWriter, request *http.Request) {
+func (handler *FrankyHandler) GetRecords(writer http.ResponseWriter, request *http.Request) {
 	records, err := (*handler.dao).GetRecords()
 
 	if err != nil {
@@ -86,7 +86,7 @@ func (handler *frankyHandler) GetRecords(writer http.ResponseWriter, request *ht
 	}
 }
 
-func (handler *frankyHandler) PostRecord(writer http.ResponseWriter, request *http.Request) {
+func (handler *FrankyHandler) PostRecord(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
 
 	bodyReader := request.Body
