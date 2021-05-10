@@ -8,7 +8,8 @@ import (
 
 func Router() *mux.Router {
 	router := mux.NewRouter()
-	handler := NewFrankyHandler()
+	dao := NewTestDAO()
+	handler := NewFrankyHandler(&dao)
 
 	router.HandleFunc("/", handler.defaultHandler)
 

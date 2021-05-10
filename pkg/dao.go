@@ -11,7 +11,7 @@ type FrankyDAO interface {
 type testDAO struct {
 }
 
-func TestDAO() FrankyDAO {
+func NewTestDAO() FrankyDAO {
 	return &testDAO{}
 }
 

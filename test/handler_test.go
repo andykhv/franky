@@ -11,10 +11,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var handler = franky.NewFrankyHandler()
+var (
+	dao     = franky.NewTestDAO()
+	handler = franky.NewFrankyHandler(&dao)
+)
 
-const usersRoute = "/users/{id:[0-9]+}"
-const recordsRoute = "/users/{id:[0-9]+}/records"
+const (
+	usersRoute   = "/users/{id:[0-9]+}"
+	recordsRoute = "/users/{id:[0-9]+}/records"
+)
 
 func TestGetUserHandler(test *testing.T) {
 	const path = "/users/123"

@@ -12,9 +12,8 @@ type frankyHandler struct {
 	dao *FrankyDAO
 }
 
-func NewFrankyHandler() *frankyHandler {
-	dao := TestDAO()
-	handler := frankyHandler{&dao}
+func NewFrankyHandler(dao *FrankyDAO) *frankyHandler {
+	handler := frankyHandler{dao}
 
 	return &handler
 }
@@ -36,13 +35,7 @@ func (handler *frankyHandler) GetUser(writer http.ResponseWriter, request *http.
 }
 
 func (handler *frankyHandler) PostUser(writer http.ResponseWriter, request *http.Request) {
-	bodyReadable, err := request.GetBody()
-
-	if err != nil {
-		httpError := &HttpError{http.StatusBadRequest, err}
-		writeErrorHeader(writer, httpError)
-		return
-	}
+	bodyReadable := request.Body
 
 	body, err := ioutil.ReadAll(bodyReadable)
 	if err != nil {
@@ -96,13 +89,7 @@ func (handler *frankyHandler) GetRecords(writer http.ResponseWriter, request *ht
 func (handler *frankyHandler) PostRecord(writer http.ResponseWriter, request *http.Request) {
 	userId := mux.Vars(request)["id"]
 
-	bodyReader, err := request.GetBody()
-
-	if err != nil {
-		httpError := &HttpError{http.StatusBadRequest, err}
-		writeErrorHeader(writer, httpError)
-		return
-	}
+	bodyReader := request.Body
 
 	body, err := ioutil.ReadAll(bodyReader)
 	if err != nil {
