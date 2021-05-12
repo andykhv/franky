@@ -3,6 +3,7 @@ package franky
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -20,6 +21,7 @@ func NewFrankyHandler(dao *FrankyDAO) *FrankyHandler {
 }
 
 func (handler *FrankyHandler) defaultHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(http.StatusOK)
 	writer.Write([]byte("Welcome To Franky!\n"))
 }
 
@@ -71,24 +73,60 @@ func (handler *FrankyHandler) PostUser(writer http.ResponseWriter, request *http
 		return
 	}
 
+	user.setCreationDate()
+	user.generateApiKey()
+	err = user.saltAndHashPassword()
+	if err != nil {
+		httpError := &HttpError{http.StatusInternalServerError, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
 	httpError := (*handler.dao).AddUser(&user)
 	if httpError != nil {
 		writeErrorHeader(writer, httpError)
 		return
 	}
 
-	writer.WriteHeader(http.StatusOK)
+	writeOkHeaderWithJson(writer)
+	json.NewEncoder(writer).Encode(fmt.Sprintf(`{"token":"%s"}`, user.ApiKey))
 }
 
 func (handler *FrankyHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {
-	userId := mux.Vars(request)["id"]
-	err := (*handler.dao).DeleteUser(userId)
-
+	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		writeErrorHeader(writer, err)
-	} else {
-		writer.WriteHeader(http.StatusOK)
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
 	}
+
+	var token map[string]string
+	err = json.Unmarshal(body, &token)
+	if err != nil {
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	userId := mux.Vars(request)["id"]
+	user, httpErr := (*handler.dao).GetUser(userId)
+	if httpErr != nil {
+		writeErrorHeader(writer, httpErr)
+		return
+	}
+	if user.ApiKey != token["token"] {
+		httpError := &HttpError{http.StatusUnauthorized, errors.New("invalid token")}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	httpErr = (*handler.dao).DeleteUser(userId)
+	if err != nil {
+		writeErrorHeader(writer, httpErr)
+		return
+	}
+
+	writer.WriteHeader(http.StatusOK)
 }
 
 /*

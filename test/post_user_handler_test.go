@@ -15,7 +15,7 @@ var postUserTests = []struct {
 	expectedStatus int
 	expectedBody   string
 }{
-	{user2, userJson2, http.StatusOK, ""},
+	{user2, userJson2, http.StatusOK, "andykhv.franky.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},
 	{user1, userJson1, http.StatusNotFound, "email already exists"},
 }
 

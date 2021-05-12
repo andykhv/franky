@@ -3,6 +3,7 @@ package test
 import (
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -27,7 +28,7 @@ var (
 	records   = `[{"Song":"song","Artist":"artist","Album":"album","Playlist":"playlist","Duration":180,"Time":1000,"Category":"rap"},{"Song":"song","Artist":"artist","Album":"album","Playlist":"playlist","Duration":180,"Time":1000,"Category":"rap"}]`
 )
 
-func testHandler(request *http.Request, handler http.HandlerFunc, path string, expectedStatus int, expectedBody string, test *testing.T) {
+func testHandler(request *http.Request, handler http.HandlerFunc, path string, expectedStatus int, expectedBodyPattern string, test *testing.T) {
 	responseRecorder := httptest.NewRecorder()
 	router := mux.NewRouter()
 	router.HandleFunc(path, handler)
@@ -37,8 +38,18 @@ func testHandler(request *http.Request, handler http.HandlerFunc, path string, e
 		test.Errorf("handler returned wrong status code: got %v want %v", status, expectedStatus)
 	}
 
-	if responseBody := strings.TrimSpace(responseRecorder.Body.String()); responseBody != expectedBody {
+	responseBody := strings.TrimSpace(responseRecorder.Body.String())
+
+	matched, err := regexp.MatchString(expectedBodyPattern, responseBody)
+
+	if err != nil {
+		test.Errorf("error in testing")
+		return
+	}
+
+	if !matched {
 		test.Errorf("handler returned unexpected body: got %s want %s",
-			responseBody, expectedBody)
+			responseBody, expectedBodyPattern)
+
 	}
 }
