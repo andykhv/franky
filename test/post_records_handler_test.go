@@ -13,7 +13,7 @@ var postRecordTests = []struct {
 	expectedStatus int
 	expectedBody   string
 }{
-	{"123", Records, http.StatusOK, ""},
+	{"123", records, http.StatusOK, ""},
 }
 
 func TestPostRecordHandler(tester *testing.T) {

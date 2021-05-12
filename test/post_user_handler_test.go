@@ -15,8 +15,8 @@ var postUserTests = []struct {
 	expectedStatus int
 	expectedBody   string
 }{
-	{User2, UserJson2, http.StatusOK, ""},
-	{User1, UserJson1, http.StatusNotFound, "email already exists"},
+	{user2, userJson2, http.StatusOK, ""},
+	{user1, userJson1, http.StatusNotFound, "email already exists"},
 }
 
 func TestPostUserHandler(tester *testing.T) {

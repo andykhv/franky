@@ -16,8 +16,7 @@ func NewTestDAO() franky.FrankyDAO {
 
 func (dao *testDAO) GetUser(userId string) (*franky.User, *franky.HttpError) {
 	if userId == "123" {
-		user := franky.User{Id: userId, Email: "email", Password: "password", ApiKey: "apiKey", CreationDate: "creationDate"}
-		return &user, nil
+		return user1, nil
 	}
 
 	err := fmt.Errorf("userId %s not found", userId)

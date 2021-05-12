@@ -2,6 +2,7 @@ package franky
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 
@@ -23,21 +24,39 @@ func (handler *FrankyHandler) defaultHandler(writer http.ResponseWriter, request
 }
 
 func (handler *FrankyHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
-	userId := mux.Vars(request)["id"]
-	user, err := (*handler.dao).GetUser(userId)
-
+	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
-		writeErrorHeader(writer, err)
-	} else {
-		writeOkHeaderWithJson(writer)
-		json.NewEncoder(writer).Encode(user)
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
 	}
+
+	var token map[string]string
+	err = json.Unmarshal(body, &token)
+	if err != nil {
+		httpError := &HttpError{http.StatusBadRequest, err}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	userId := mux.Vars(request)["id"]
+	user, httpErr := (*handler.dao).GetUser(userId)
+	if httpErr != nil {
+		writeErrorHeader(writer, httpErr)
+		return
+	}
+	if user.ApiKey != token["token"] {
+		httpError := &HttpError{http.StatusUnauthorized, errors.New("invalid token")}
+		writeErrorHeader(writer, httpError)
+		return
+	}
+
+	writeOkHeaderWithJson(writer)
+	json.NewEncoder(writer).Encode(user)
 }
 
 func (handler *FrankyHandler) PostUser(writer http.ResponseWriter, request *http.Request) {
-	bodyReadable := request.Body
-
-	body, err := ioutil.ReadAll(bodyReadable)
+	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
 		httpError := &HttpError{http.StatusBadRequest, err}
 		writeErrorHeader(writer, httpError)

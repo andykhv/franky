@@ -11,7 +11,7 @@ var getRecordsTests = []struct {
 	expectedStatus int
 	expectedBody   string
 }{
-	{"123", http.StatusOK, Records},
+	{"123", http.StatusOK, records},
 }
 
 func TestGetRecordsHandler(tester *testing.T) {

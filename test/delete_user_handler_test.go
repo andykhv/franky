@@ -13,8 +13,8 @@ var deleteUserTests = []struct {
 	expectedStatus int
 	expectedBody   string
 }{
-	{User1, http.StatusOK, ""},
-	{User2, http.StatusNotFound, fmt.Sprintf("userId %s not found", User2.Id)},
+	{user1, http.StatusOK, ""},
+	{user2, http.StatusNotFound, fmt.Sprintf("userId %s not found", user2.Id)},
 }
 
 func TestDeleteUserHandler(tester *testing.T) {
