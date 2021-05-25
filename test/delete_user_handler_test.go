@@ -29,6 +29,6 @@ func TestDeleteUserHandler(tester *testing.T) {
 			tester.Fatal(err)
 		}
 
-		testHandler(request, handler.DeleteUser, usersRoute, t.expectedStatus, t.expectedBody, tester)
+		testHandler(request, handler.DeleteUser, usersIdRoute, t.expectedStatus, t.expectedBody, tester)
 	}
 }

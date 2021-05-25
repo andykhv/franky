@@ -33,5 +33,9 @@ func (user *User) setCreationDate() {
 }
 
 func (user *User) generateApiKey() {
-	user.ApiKey = "andykhv.franky." + uuid.NewString()
+	user.ApiKey = "franky.api." + uuid.NewString()
+}
+
+func (user *User) generateId() {
+	user.Id = "franky.user." + uuid.NewString()
 }

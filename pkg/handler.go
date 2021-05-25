@@ -20,11 +20,6 @@ func NewFrankyHandler(dao *FrankyDAO) *FrankyHandler {
 	return &handler
 }
 
-func (handler *FrankyHandler) defaultHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.WriteHeader(http.StatusOK)
-	writer.Write([]byte("Welcome To Franky!\n"))
-}
-
 func (handler *FrankyHandler) GetUser(writer http.ResponseWriter, request *http.Request) {
 	body, err := ioutil.ReadAll(request.Body)
 	if err != nil {
@@ -74,6 +69,7 @@ func (handler *FrankyHandler) PostUser(writer http.ResponseWriter, request *http
 	}
 
 	user.setCreationDate()
+	user.generateId()
 	user.generateApiKey()
 	err = user.saltAndHashPassword()
 	if err != nil {
@@ -89,7 +85,7 @@ func (handler *FrankyHandler) PostUser(writer http.ResponseWriter, request *http
 	}
 
 	writeOkHeaderWithJson(writer)
-	json.NewEncoder(writer).Encode(fmt.Sprintf(`{"token":"%s"}`, user.ApiKey))
+	json.NewEncoder(writer).Encode(fmt.Sprintf(`{"token":"%s", "id":"%s"}`, user.ApiKey, user.Id))
 }
 
 func (handler *FrankyHandler) DeleteUser(writer http.ResponseWriter, request *http.Request) {

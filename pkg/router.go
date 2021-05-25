@@ -9,7 +9,6 @@ import (
 func Router(handler *FrankyHandler) *mux.Router {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", handler.defaultHandler)
 	router.HandleFunc("/users/{id:[0-9]+}", handler.GetUser).
 		Methods(http.MethodGet)
 	router.HandleFunc("/users", handler.PostUser).

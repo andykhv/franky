@@ -2,7 +2,6 @@ package test
 
 import (
 	"bytes"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -15,13 +14,13 @@ var postUserTests = []struct {
 	expectedStatus int
 	expectedBody   string
 }{
-	{user2, userJson2, http.StatusOK, "andykhv.franky.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"},
+	{user2, userJson2, http.StatusOK, `{\\\"token\\\":\\\"franky.api.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\\", \\\"id\\\":\\\"franky.user.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\\"}`},
 	{user1, userJson1, http.StatusNotFound, "email already exists"},
 }
 
 func TestPostUserHandler(tester *testing.T) {
 	for _, t := range postUserTests {
-		path := fmt.Sprintf("/users/%s", t.user.Id)
+		path := "/users"
 		request, err := http.NewRequest("POST", path, bytes.NewBufferString(t.userJson))
 
 		if err != nil {

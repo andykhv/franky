@@ -29,6 +29,6 @@ func TestGetUserHandler(tester *testing.T) {
 			tester.Fatal(err)
 		}
 
-		testHandler(request, handler.GetUser, usersRoute, t.expectedStatus, t.expectedBody, tester)
+		testHandler(request, handler.GetUser, usersIdRoute, t.expectedStatus, t.expectedBody, tester)
 	}
 }
