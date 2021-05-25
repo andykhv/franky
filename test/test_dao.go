@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	franky "github.com/andykhv/franky/pkg"
+	franky "github.com/andykhv/franky/api"
 )
 
 type testDAO struct {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	franky "github.com/andykhv/franky/pkg"
+	franky "github.com/andykhv/franky/api"
 )
 
 var postUserTests = []struct {

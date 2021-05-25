@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	franky "github.com/andykhv/franky/pkg"
+	franky "github.com/andykhv/franky/api"
 	"github.com/andykhv/franky/test"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	franky "github.com/andykhv/franky/pkg"
+	franky "github.com/andykhv/franky/api"
 	"github.com/gorilla/mux"
 )
 
