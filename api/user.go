@@ -1,7 +1,6 @@
 package franky
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,7 +12,7 @@ type User struct {
 	Email        string
 	Password     string
 	ApiKey       string
-	CreationDate string
+	CreationDate int64
 }
 
 func (user *User) saltAndHashPassword() error {
@@ -29,7 +28,7 @@ func (user *User) saltAndHashPassword() error {
 }
 
 func (user *User) setCreationDate() {
-	user.CreationDate = fmt.Sprint(time.Now().UnixNano())
+	user.CreationDate = time.Now().Unix()
 }
 
 func (user *User) generateApiKey() {

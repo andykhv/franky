@@ -46,7 +46,7 @@ func (dao *testDAO) DeleteUser(userId string) *franky.HttpError {
 }
 
 func (dao *testDAO) GetRecords() ([]franky.Record, *franky.HttpError) {
-	record := franky.Record{Song: "song", Artist: "artist", Album: "album", Playlist: "playlist", Duration: 180, Time: 1000, Category: "rap"}
+	record := franky.Record{UserId: "123", Song: "song", Artist: "artist", Album: "album", Playlist: "playlist", Duration: 180, Date: 1622143906, Category: "rap"}
 	return []franky.Record{record, record}, nil
 }
 
