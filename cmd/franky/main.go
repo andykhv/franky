@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	franky "github.com/andykhv/franky/api"
-	"github.com/andykhv/franky/test"
+	"github.com/andykhv/franky/api/test"
 )
 
 func main() {

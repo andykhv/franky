@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -129,10 +130,17 @@ func (handler *FrankyHandler) DeleteUser(writer http.ResponseWriter, request *ht
 Optional Query Parameters: song, artist, album, playlist, category, range
 */
 func (handler *FrankyHandler) GetRecords(writer http.ResponseWriter, request *http.Request) {
-	records, err := (*handler.dao).GetRecords()
+	recordRequest, err := newRecordRequestFromParameters(request)
 
 	if err != nil {
-		writeErrorHeader(writer, err)
+		writeErrorHeader(writer, &HttpError{http.StatusBadRequest, err})
+		return
+	}
+
+	records, httpErr := (*handler.dao).GetRecords(recordRequest)
+
+	if httpErr != nil {
+		writeErrorHeader(writer, httpErr)
 	} else {
 		writeOkHeaderWithJson(writer)
 		json.NewEncoder(writer).Encode(records)
@@ -177,4 +185,41 @@ func writeErrorHeader(writer http.ResponseWriter, err *HttpError) {
 	writer.WriteHeader(err.StatusCode)
 	writer.Header().Set("Content-Type", "text/plain")
 	writer.Write([]byte(err.Err.Error()))
+}
+
+func newRecordRequestFromParameters(request *http.Request) (*RecordRequest, error) {
+	userId := mux.Vars(request)["id"]
+
+	queries := request.URL.Query()
+	song := queries.Get("song")
+	artist := queries.Get("artist")
+	album := queries.Get("album")
+	playlist := queries.Get("playlist")
+	category := queries.Get("category")
+	startDate := queries.Get("startDate")
+	endDate := queries.Get("endDate")
+
+	fmt.Println(startDate)
+
+	startDateTime, err := time.Parse(time.RFC822, startDate)
+
+	if err != nil {
+		return nil, errors.New("start date must exist and be in RFC822Z format")
+	}
+
+	endDateTime, err := time.Parse(time.RFC822, endDate)
+
+	if err != nil {
+		return nil, errors.New("end date must exist and be in RFC822Z format")
+	}
+
+	return &RecordRequest{UserId: userId,
+		Song:      song,
+		Artist:    artist,
+		Album:     album,
+		Playlist:  playlist,
+		Category:  category,
+		StartDate: startDateTime.Unix(),
+		EndDate:   endDateTime.Unix(),
+	}, nil
 }
